@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>HDR - Admin</title>
 
   <!-- Favicon - รองรับทุกอุปกรณ์ -->
@@ -30,8 +30,8 @@
       /* New Premium Palette (Deep Space & Nebula) */
       --bg-body: #020617;
       /* Slate 950 */
-      --bg-sidebar: rgba(15, 23, 42, 0.85);
-      /* Slate 900 */
+      --bg-sidebar: rgba(15, 23, 42, 0.95);
+      /* Slate 900 - เพิ่มความทึบสำหรับมือถือ */
       --bg-card: rgba(30, 41, 59, 0.6);
       /* Slate 800 */
       --bg-input: rgba(2, 6, 23, 0.5);
@@ -85,6 +85,7 @@
       min-height: 100vh;
       overflow-x: hidden;
       display: flex;
+      position: relative;
     }
 
     /* Ambient Background Effect - Cleaner & "Cool" */
@@ -135,9 +136,255 @@
       display: flex;
       flex-direction: column;
       padding: 2rem 1.5rem;
-      z-index: 100;
+      z-index: 1000;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 5px 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ปรับปรุงการแสดงผลบนมือถือและ iPad */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+        box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .main-content {
+        margin-left: 0 !important;
+        padding: 5rem 1rem !important;
+        width: 100%;
+      }
+
+      /* ปรับปรุงปุ่มเมนูสำหรับมือถือ */
+      #mobileMenuBtn {
+        display: flex !important;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 1001;
+        background: var(--bg-card);
+        border: var(--glass-border);
+        color: var(--text-main);
+        width: 48px;
+        height: 48px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      #mobileMenuBtn:active {
+        transform: scale(0.95);
+        background: rgba(99, 102, 241, 0.2);
+      }
+
+      /* ปรับปรุงปุ่มกลับเมนูหลัก */
+      #loggedInBackButton {
+        top: 15px !important;
+        right: 15px !important;
+        z-index: 1001 !important;
+      }
+
+      #loggedInBackButton button {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      /* ปรับปรุงการ์ดและตาราง */
+      .card {
+        padding: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 0.75rem !important;
+      }
+
+      .room-card {
+        padding: 1rem !important;
+      }
+
+      .room-card .val {
+        font-size: 1.8rem !important;
+      }
+
+      /* ปรับปรุงตารางให้เลื่อนดูได้ */
+      .table-container {
+        border-radius: var(--radius-md);
+        margin: 0 -0.25rem;
+        width: calc(100% + 0.5rem);
+      }
+
+      table {
+        min-width: 600px;
+      }
+
+      th, td {
+        padding: 12px 16px !important;
+        font-size: 0.9rem;
+      }
+
+      /* ปรับปรุงปุ่มในตาราง */
+      td .btn-icon-round {
+        width: 34px;
+        height: 34px;
+        font-size: 0.9rem;
+      }
+
+      td {
+        flex-wrap: wrap;
+        gap: 6px !important;
+      }
+
+      /* ปรับปรุงฟอร์มแก้ไข */
+      #editForm {
+        padding: 1.25rem !important;
+      }
+
+      #editForm > div:first-of-type {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ปรับปรุง date selector */
+      .date-selector {
+        padding: 1rem !important;
+        gap: 15px !important;
+      }
+
+      .date-input-group {
+        width: 100%;
+      }
+
+      .btn-summary {
+        width: 100%;
+        padding: 14px !important;
+      }
+
+      /* ปรับปรุง search box */
+      #manage .card > div:first-of-type {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* ปรับปรุง login panel */
+      #loginPanel .card {
+        padding: 2rem 1.5rem !important;
+        max-width: 90% !important;
+      }
+
+      .login-back-button button {
+        background: var(--bg-card);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+    }
+
+    /* ปรับปรุงเพิ่มเติมสำหรับ iPad ในแนวนอน */
+    @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+      .main-content {
+        padding: 5rem 2rem !important;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+    }
+
+    /* ปรับปรุงสำหรับมือถือขนาดเล็ก */
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 5rem 0.75rem !important;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .section-header button {
+        width: 100%;
+      }
+
+      h2 {
+        font-size: 1.5rem !important;
+      }
+
+      .card {
+        padding: 1rem !important;
+      }
+
+      .btn-summary {
+        font-size: 1rem !important;
+      }
+
+      td {
+        font-size: 0.85rem !important;
+        padding: 10px 12px !important;
+      }
+
+      td .btn-icon-round {
+        width: 30px;
+        height: 30px;
+      }
+
+      .badge-absent, .badge-present {
+        padding: 4px 10px !important;
+        font-size: 0.75rem !important;
+      }
+    }
+
+    /* คลุมพื้นหลังเมื่อเปิดเมนูบนมือถือ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Desktop Styles */
+    @media (min-width: 1025px) {
+      .main-content {
+        margin-left: var(--sidebar-width);
+        padding: 3rem;
+      }
+
+      #mobileMenuBtn {
+        display: none !important;
+      }
+
+      .sidebar-overlay {
+        display: none !important;
+      }
     }
 
     .sidebar-header {
@@ -178,12 +425,17 @@
       font-size: 1rem;
       position: relative;
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .nav-item:hover {
       background: rgba(255, 255, 255, 0.05);
       color: var(--text-main);
       transform: translateX(4px);
+    }
+
+    .nav-item:active {
+      background: rgba(99, 102, 241, 0.2);
     }
 
     .nav-item.active {
@@ -214,11 +466,10 @@
 
     /* Main Content */
     .main-content {
-      margin-left: var(--sidebar-width);
       flex: 1;
-      padding: 3rem;
       transition: margin 0.3s ease;
       position: relative;
+      min-height: 100vh;
     }
 
     h2 {
@@ -264,7 +515,6 @@
       box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.6), var(--glow-card);
     }
 
-
     /* Date Selector */
     .date-selector {
       display: flex;
@@ -305,6 +555,15 @@
       font-family: var(--font-main);
       font-size: 1rem;
       transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
     }
 
     input:focus,
@@ -331,6 +590,7 @@
       font-size: 1rem;
       position: relative;
       overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
     }
 
     button:active {
@@ -425,7 +685,7 @@
       height: 38px;
       padding: 0;
       border-radius: 50%;
-      display: flex;
+      display: inline-flex;
       justify-content: center;
       align-items: center;
     }
@@ -502,9 +762,11 @@
     /* Tables */
     .table-container {
       overflow-x: auto;
+      overflow-y: hidden;
       border-radius: var(--radius-lg);
       border: var(--glass-border);
       background: rgba(15, 23, 42, 0.4);
+      -webkit-overflow-scrolling: touch;
     }
 
     table {
@@ -569,7 +831,7 @@
     #loginPanel {
       position: fixed;
       inset: 0;
-      z-index: 1000;
+      z-index: 2000;
       background: #020617;
       background-image:
         radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 50%),
@@ -590,60 +852,6 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-      }
-
-      .main-content {
-        margin-left: 0;
-        padding: 5rem 1.5rem;
-      }
-
-      #mobileMenuBtn {
-        display: flex;
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 101;
-        background: var(--bg-card);
-        border: var(--glass-border);
-        color: var(--text-main);
-        width: 44px;
-        height: 44px;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        font-size: 1.5rem;
-        box-shadow: var(--shadow-sm);
-        backdrop-filter: blur(10px);
-      }
-
-      .date-selector {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .login-back-button {
-        top: 15px;
-        right: 15px;
-      }
-
-      .section-header {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .section-header button {
-        width: 100%;
-      }
     }
 
     /* Utilities */
@@ -729,8 +937,11 @@
 </head>
 
 <body>
+  <!-- Overlay สำหรับปิดเมนูเมื่อคลิกด้านนอก -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <!-- ปุ่มกลับเมนูหลักสำหรับหน้าล็อคอิน -->
-  <div class="login-back-button" id="loginBackButton" style="position:fixed; top:20px; right:20px; z-index:1001;">
+  <div class="login-back-button" id="loginBackButton" style="position:fixed; top:20px; right:20px; z-index:2001;">
     <button class="btn-home" onclick="goToMainMenu()">
       <i class="ri-home-line"></i> กลับเมนูหลัก
     </button>
@@ -761,7 +972,6 @@
       </div>
 
       <h2 style="justify-content: center; margin-bottom: 10px;">Admin</h2>
-      </p>
 
       <div style="text-align: left; margin-bottom: 20px;">
         <label style="display:block; color:var(--text-muted); margin-bottom:8px; font-size:0.9rem;">อีเมลผู้ดูแล</label>
@@ -821,7 +1031,7 @@
 
       <div class="date-selector">
         <div class="date-input-group">
-          <label class="date-label"><i class="ri-calendar-event-line"></i> เลือกวันที่ต้องการดูรายงาน</label>
+          <label class="date-label"><i class="ri-calendar-event-line"></i> เลือกวันที่ต้องการสรุป</label>
           <input type="date" id="reportDate" class="date-input">
         </div>
         <button class="btn-summary" onclick="generateSummary()" id="summaryButton">
@@ -908,12 +1118,12 @@
             </select>
           </div>
         </div>
-        <div style="margin-top:30px; display:flex; gap:12px;">
-          <button class="btn-primary" onclick="updateStudent()">
+        <div style="margin-top:30px; display:flex; gap:12px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="updateStudent()" style="flex: 1; min-width: 140px;">
             <i class="ri-save-line"></i> บันทึกข้อมูล
           </button>
-          <button class="btn-danger-light" onclick="cancelEdit()" style="border:none">
-            <i class="ri-cloe-line"></i> ยกเลิก
+          <button class="btn-danger-light" onclick="cancelEdit()" style="flex: 1; min-width: 140px;">
+            <i class="ri-close-line"></i> ยกเลิก
           </button>
         </div>
       </div>
@@ -973,7 +1183,7 @@
         </p>
         <div style="max-width: 450px; margin: 0 auto;">
           <input type="file" id="csvFileInput" accept=".csv"
-            style="margin-bottom:20px; width:100%; border: 2px dashed rgba(255,255,255,0.1); background: transparent; height: auto; text-align: center;">
+            style="margin-bottom:20px; width:100%; border: 2px dashed rgba(255,255,255,0.1); background: transparent; height: auto; text-align: center; padding: 20px;">
           <button class="btn-primary" onclick="importCSV()"
             style="width:100%; justify-content:center; padding:16px; font-size: 1.1rem;">
             <i class="ri-upload-cloud-fill"></i> เริ่มประมวลผลไฟล์
@@ -1012,14 +1222,35 @@
     }
 
     window.toggleSidebar = () => {
-      document.querySelector('.sidebar').classList.toggle('show');
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('show');
+      
+      // ป้องกันการ scroll เมื่อเปิดเมนู
+      if (sidebar.classList.contains('show')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    };
+
+    window.closeSidebar = () => {
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
     };
 
     window.switchTab = (id, el) => {
       document.querySelectorAll('.page-section, .nav-item').forEach(x => x.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       el.classList.add('active');
-      if (window.innerWidth <= 900) document.querySelector('.sidebar').classList.remove('show');
+      // ปิดเมนูอัตโนมัติเมื่อเปลี่ยนแทบบนมือถือ
+      if (window.innerWidth <= 1024) {
+        closeSidebar();
+      }
     };
 
     window.showLoading = (show) => document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
@@ -1053,7 +1284,7 @@
     onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById("loginPanel").style.display = "none";
-        document.getElementById("loggedInBackButton").style.display = "block"; // Changed from flex to block/default as styled in CSS
+        document.getElementById("loggedInBackButton").style.display = "block";
         document.getElementById("loginBackButton").style.display = "none";
 
         // กำหนดชื่อและรูปตามอีเมล
@@ -1254,9 +1485,9 @@
             <td style="font-weight:600;">${std.id}</td>
             <td>${std.name}</td>
             <td>ม.${std.class}</td>
-            <td style="display:flex; gap:10px;">
-              <span class="badge-absent">🔴 ขาดเรียน</span>
-              <button onclick="markPresent('${std.id}')" class="btn-success" style="padding:6px 12px; font-size:0.85rem;">
+            <td style="display:flex; gap:6px; flex-wrap: wrap;">
+              <span class="badge-absent" style="white-space: nowrap;">🔴 ขาดเรียน</span>
+              <button onclick="markPresent('${std.id}')" class="btn-success" style="padding:6px 10px; font-size:0.8rem; white-space: nowrap;">
                 <i class="ri-check-line"></i> เช็คชื่อ
               </button>
             </td>
@@ -1289,7 +1520,7 @@
             <td style="font-weight:600;">${s.id}</td>
             <td>${s.name}</td>
             <td><span class="badge-present" style="background:rgba(99, 102, 241, 0.15); color:var(--primary); border: 1px solid rgba(99, 102, 241, 0.3);">ม.${s.class}</span></td>
-            <td style="display:flex; gap:8px;">
+            <td style="display:flex; gap:6px; flex-wrap: wrap;">
               <button class="btn-warning btn-icon-round" onclick="startEdit('${s.id}','${s.name}','${s.class}')"><i class="ri-edit-line"></i></button>
               ${statusBtn}
               <button class="btn-danger-light btn-icon-round" onclick="deleteStudent('${s.id}')"><i class="ri-delete-bin-line"></i></button>
@@ -1343,8 +1574,20 @@
       });
     };
 
-    // Initial State - removed show class check from script to pure css if desired,
-    // but originally consistent with JS logic. Kept it simple.
+    // ปรับปรุงการแสดงผลเมื่อเปลี่ยนขนาดหน้าจอ
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 1024) {
+        closeSidebar();
+        document.body.style.overflow = '';
+      }
+    });
+
+    // ป้องกันการเลื่อนเมื่อแตะที่ sidebar บนมือถือ
+    document.querySelector('.sidebar').addEventListener('touchmove', function(e) {
+      e.stopPropagation();
+    }, { passive: true });
+
+    // Initial State
     document.querySelector('.sidebar').classList.remove('show');
   </script>
 </body>
