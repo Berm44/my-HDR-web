@@ -1331,8 +1331,8 @@
         <div id="adminPanel">
             <div class="admin-header">
                 <div>
-                    <h3 style="margin:0; color:#fff;">Admin Dashboard</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">ระบบตรวจสอบแบบ Realtime</span>
+                    <h3 style="margin:0; color:#fff;">ADMIN</h3>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">ระบบแบบ Realtime</span>
                 </div>
                 <div>
                     <button onclick="window.location.href='https://bathroom-check-system.web.app/admin.html'"
@@ -1369,7 +1369,7 @@
                 </div>
                 <div class="stat-card clickable" onclick="showGlobalAbsent()">
                     <span class="stat-val" id="schoolAbsent" style="color:#ef4444">0</span>
-                    <span class="stat-lbl"><i class="fa-solid fa-hand-point-up"></i> ขาด (รวม)</span>
+                    <span class="stat-lbl"> ขาดทั้งหมด</span>
                 </div>
             </div>
 
@@ -1612,7 +1612,9 @@
                 return docRef.exists;
             } catch (error) {
                 console.error("Error checking duplicate:", error);
-                return false;
+                // Return null to indicate an error occurred (e.g. permissions),
+                // so caller won't continue as if "not duplicate".
+                return null;
             }
         }
 
@@ -1641,18 +1643,17 @@
                 const stu = studentDoc.data();
                 const isDuplicate = await checkDuplicateAttendance(id, selectedSlot);
 
+                // If checkDuplicateAttendance returned null -> an error (likely permissions)
+                if (isDuplicate === null) {
+                    console.error('Cannot verify duplicate due to permission/error. Aborting write.');
+                    showModal(false, 'ไม่สามารถตรวจสอบ/บันทึกข้อมูล — สิทธิ์ฐานข้อมูลไม่เพียงพอ', 'permission');
+                    els.btnSubmit.textContent = 'ยืนยันการลงชื่อ';
+                    return;
+                }
+
                 if (isDuplicate) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'ลงชื่อซ้ำ',
-                        html: `คุณ <span style="color:var(--warning); font-weight:600;">${stu.name}</span> ได้ลงชื่อรอบ${selectedSlot === 'morning' ? 'เช้า' : 'บ่าย'}ไปแล้ว`,
-                        timer: 3000,
-                        showConfirmButton: false,
-                        position: 'top-end',
-                        toast: true,
-                        background: '#1e293b',
-                        color: '#e2e8f0'
-                    });
+                    console.log('Duplicate attendance detected for', id, selectedSlot);
+                    showDuplicate(stu.name, selectedSlot);
                     els.input.value = '';
                     els.btnSubmit.textContent = 'ยืนยันการลงชื่อ';
                     return;
@@ -1684,7 +1685,13 @@
 
             } catch (e) {
                 console.error("Error in submitAttendance:", e);
-                showModal(false, e.message || 'เกิดข้อผิดพลาด');
+                // Detect Firebase permission errors and show clearer message
+                const msg = (e && e.code) || (e && e.message) || '';
+                if (msg.toString().toLowerCase().includes('missing or insufficient permissions') || msg.toString().toLowerCase().includes('permission')) {
+                    showModal(false, 'ไม่สามารถเข้าถึงฐานข้อมูล: สิทธิ์ไม่เพียงพอ', 'permission');
+                } else {
+                    showModal(false, e.message || 'เกิดข้อผิดพลาด');
+                }
             }
 
             els.btnSubmit.textContent = 'ยืนยันการลงชื่อ';
@@ -1696,12 +1703,50 @@
             const t = document.getElementById('resTitle');
             const d = document.getElementById('resName');
 
+            // Special case: duplicate attendance (show warning style but not treated as generic error)
+            if (subtitle === 'duplicate') {
+                i.className = 'fa-solid fa-xmark';
+                i.style.color = 'var(--danger)';
+                t.textContent = 'ลงชื่อไปแล้ว';
+                d.textContent = title;
+                m.classList.add('active');
+                setTimeout(() => m.classList.remove('active'), 2000);
+                return;
+            }
+
+            // Permission error (explicit message)
+            if (subtitle === 'permission') {
+                i.className = 'fa-solid fa-circle-xmark';
+                i.style.color = 'var(--danger)';
+                t.textContent = 'สิทธิ์ไม่เพียงพอ';
+                d.textContent = title;
+                m.classList.add('active');
+                setTimeout(() => m.classList.remove('active'), 3000);
+                return;
+            }
+
+            // Existing behavior: success / late / error
             i.className = success ? (subtitle === 'มาสาย' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check') : 'fa-solid fa-circle-xmark';
             i.style.color = success ? (subtitle === 'มาสาย' ? 'var(--warning)' : 'var(--success)') : 'var(--danger)';
             t.textContent = success ? (subtitle === 'มาสาย' ? 'มาสายนะครับ' : 'บันทึกสำเร็จ') : 'เกิดข้อผิดพลาด';
             d.textContent = title;
             m.classList.add('active');
             setTimeout(() => m.classList.remove('active'), 2000);
+        }
+
+        // Dedicated duplicate UI so it's explicit and avoids being mistaken for a generic error
+        function showDuplicate(name, slot) {
+            const m = document.getElementById('resultOverlay');
+            const i = document.getElementById('resIcon');
+            const t = document.getElementById('resTitle');
+            const d = document.getElementById('resName');
+
+            i.className = 'fa-solid fa-xmark';
+            i.style.color = 'var(--danger)';
+            t.textContent = 'ลงชื่อไปแล้ว';
+            d.textContent = `${name} — รอบ${slot === 'morning' ? 'เช้า' : 'บ่าย'}`;
+            m.classList.add('active');
+            setTimeout(() => m.classList.remove('active'), 2200);
         }
 
         els.input.addEventListener("keypress", (e) => { if (e.key === "Enter") window.submitAttendance(); });
